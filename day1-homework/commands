@@ -1,0 +1,20 @@
+[day1-homework]_basic exercise
+
+Q1:
+
+/Users/cmdb/data/day1-homework $ fastqc SRR072893.fastq
+
+Q2:
+
+/Users/cmdb/data/day1-homework $ hisat2 -p 4 -x ~/data/BDGP6/BDGP6 -U SRR072893.fastq -S ./day1hisat2.sam
+
+Q3:
+
+/Users/cmdb/data/day1-homework $ samtools view -bS day1hisat2.sam | samtools sort -o day1samtools.bam
+
+/Users/cmdb/data/day1-homework $ samtools index day1samtools.bam
+
+Q4:
+
+/Users/cmdb/data/day1-homework $ stringtie day1samtools.bam -p 4 -e -B -o ./day1stringtie.gtf -G ../BDGP6/BDGP6.Ensembl.85.gtf
+
