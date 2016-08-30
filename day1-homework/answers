@@ -1,0 +1,68 @@
+[day1-homework]_advanced exercise
+
+Q1;
+
+/Users/cmdb/data/day1-homework $ cut -f 10 day1hisat2.sam | sort | uniq | wc -l
+ 7987387
+/Users/cmdb/data/day1-homework $ cut -f 10 day1hisat2.sam | sort | uniq | head
+
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGC
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGCA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATTTT
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAGTGAACATTTCTCGGGAC
+AAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAA
+
+The answer to this question should be 7987387 - 1 = 7987386.
+
+------------------------------------------------------------end
+
+Q2:
+
+/Users/cmdb/data/day1-homework $ cut -f 4 day1hisat2.sam | sort | uniq | sort | head
+
+0
+1
+10
+1000
+100000
+10000000
+10000001
+10000002
+10000004
+
+
+/Users/cmdb/data/day1-homework $ cut -f 4 day1hisat2.sam | sort | uniq -c | sort | head
+   1 100000
+   1 10000002
+   1 10000006
+   1 10000008
+   1 10000015
+   1 10000016
+   1 10000024
+   1 10000037
+   1 10000040
+   1 10000043
+
+
+/Users/cmdb/data/day1-homework $ cut -f 4 day1hisat2.sam | sort | uniq -c | sort | tail
+1341 11895182
+1355 11894449
+1520 12934
+1657 11895096
+1727 11893585
+1871 
+1954 10398501
+1994 19026852
+2218 24903766
+4679237 0
+
+
+Because POS is set as 0 for an unmapped read without coordinate.
+
+The answer to this question is Chromosome position 24903766 which has 2218 reads.
+
+---------------------------------------------------------------------------------end
