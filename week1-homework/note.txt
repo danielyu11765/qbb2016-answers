@@ -1,0 +1,40 @@
+[BLAST Search]
+1.
+blastn -remote -db nr -query query.fa -evalue 0.0001 -max_target_seqs 1000 -outfmt "6 sseqid qstart qend sseq" -out blastquery-00.tsv
+
+sseqid means Subject Seq-id
+qstart means Start of alignment in query
+qend means End of alignment in query
+
+2.
+./replace.py > blastquery-01.tsv
+
+3.
+awk 'BEGIN { OFS = "\n" } {print ">"$1, $4;}' > blastquery-02.tsv
+awk 'BEGIN { OFS = "\n" } {print ">"$1, $2, $3, $4;}'
+
+[Multiple Alignment]
+4.
+brew install Emboss
+
+5.
+transeq blastquery-02.tsv blastquery-02-aa.pep
+transeq query.fa query.pep
+
+6.
+brew install MAFFT
+
+7.
+mafft --auto input > output
+mafft --auto blastquery-02-aa.pep > blastquery-02-align.tsv
+
+[Back to nucleotides]
+8.
+./AAtoNT-01.py < blastquery-02.tsv > blastquery-03.tsv
+./AAtoNT-01.py < blastquery-02-align.tsv > blastquery-03-align.tsv
+
+pipe this to check the order of first column
+awk '{print $1;}'
+
+
+
