@@ -1,0 +1,198 @@
+[First assemblies]
+
+1.Velveth & Velvetg
+
+Velveth helps you construct the dataset for the following program, velvetg, and indicate to the system what each sequence file represents.
+ 
+Paired-end short reads (using separate files for the paired reads)
+
+$ time velveth Assem 31 -shortPaired -fastq -separate reads_low_1.fastq reads_low_2.fastq
+real	0m0.193s
+user	0m0.084s
+sys	0m0.067s
+
+
+Velvetg is the core of Velvet where the de Bruijn graph is built then manipulated.
+
+$ time velvetg Assem > ./Assem/velvetg
+real	0m0.068s
+user	0m0.041s
+sys	0m0.007s
+
+Final graph has 306 nodes and n50 of 233, max 968, total 47835, using 0/2000 reads
+
+2. SPAdes
+$ time spades.py -1 reads_low_1.fastq -2 reads_low_2.fastq -k 31 -o ~/QuanBioLab/week2/SPAdes-01/
+
+SPAdes log can be found here: /Users/cmdb/QuanBioLab/week2/SPAdes-01/spades.log
+
+Thank you for using SPAdes!
+
+real	0m3.526s
+user	0m5.151s
+sys	0m0.649s
+
+
+*** Note that the length and coverage information provided in the header of
+each contig should therefore be understood in k-mers and in k-mer coverage (cf.
+5.2) respectively. E.g. for a 500bp contig and a k-mer length of 21, the length
+in the header will be 480.
+
+
+3. The number of contigs, minimum/maximum/average contig length, and N50
+$ time ./contig-00.py contigs.fa
+countig number = 305
+minimun contig = 31
+maximum contig = 968
+average contig = 156.796721311
+N50 = 233
+
+real	0m0.302s
+user	0m0.123s
+sys	0m0.083s
+
+
+$ time ./contig-00.py ../SPAdes-01/K31/final_contigs.fasta
+countig number = 136
+minimun contig = 187
+maximum contig = 1737
+average contig = 351.764705882
+N50 = 346
+
+real	0m0.277s
+user	0m0.109s
+sys	0m0.075s
+
+4. LASTZ
+
+
+R Dotplot (alignment output)
+
+This is a home-grown format designed to facilitate plotting the alignment blocks with the R statistical package. Alignments are reduced to a series of gap-free segments, each of which is written in three lines as shown below. Endpoints are origin-one, closed, and alignments on the reverse strand have <..._query_end> less than <..._query_start> so that R will draw them in the reverse (slope=−1) orientation.
+    <target_name>            <query_name>
+    <segment1_target_start>  <segment1_query_start>
+    <segment1_target_end>    <segment1_query_end>
+    NA                       NA
+    <segment2_target_start>  <segment2_query_start>
+    <segment2_target_end>    <segment2_query_end>
+    NA                       NA
+     ...
+The file can then be plotted in R with commands like these:
+    dots = read.table("your_file",header=T)
+    plot(dots,type="l")
+
+$ time lastz ./Assem/contigs.fa[multiple] reference.fasta[unmask] --chain --format=mapping > ./LASTZ/lastz-v.tsv
+real	0m3.842s
+user	0m3.774s
+sys	0m0.045s
+
+$ time lastz ./SPAdes-01/K31/final_contigs.fasta[multiple] reference.fasta[unmask] --chain --format=mapping > ./LASTZ/lastz-s.tsv
+real	0m3.784s
+user	0m3.706s
+sys	0m0.046s
+
+$ time lastz ./Assem/contigs.fa[multiple] reference.fasta[unmask] --chain --format=rdotplot > ./LASTZ/rdotplot-v.tsv
+real	0m3.878s
+user	0m3.805s
+sys	0m0.047s
+
+$ time lastz ./SPAdes-01/K31/final_contigs.fasta[multiple] reference.fasta[unmask] --chain --format=rdotplot > ./LASTZ/rdotplot-s.tsv
+real	0m3.781s
+user	0m3.708s
+sys	0m0.045s
+
+For R_velvet
+png('~/QuanBioLab/week2/LASTZ/rdotplot-v.png')
+> dots = read.table("~/QuanBioLab/week2/LASTZ/rdotplot-v.tsv",header=T)
+> plot(dots,type="l")
+> title('Velvet assembly_low coverage')
+> dev.off()
+
+For R_SPAdes
+png('~/QuanBioLab/week2/LASTZ/rdotplot-s.png')
+> dots = read.table("~/QuanBioLab/week2/LASTZ/rdotplot-s.tsv",header=T)
+> plot(dots,type="l")
+> title('SPAdes assembly_low coverage')
+> dev.off()
+
+————————————————————————————————————————————————————————————————
+————————————————————————————————————————————————————————————————
+5. Run all commands again by using high coverage data!!!!!
+
+$ time velveth Assem-01 31 -shortPaired -fastq -separate reads_high_1.fastq reads_high_2.fastq
+real	0m12.261s
+user	0m11.199s
+sys	0m0.529s
+
+$ time velvetg Assem-01 > ./Assem-01/velvetg-01
+real	0m1.799s
+user	0m1.519s
+sys	0m0.173s
+
+$ time spades.py -1 reads_high_1.fastq -2 reads_high_2.fastq -k 31 -o ~/QuanBioLab/week2/SPAdes-02/
+real	2m18.754s
+user	7m2.690s
+sys	0m21.328s
+
+$ time ./contig-00.py contigs.fa
+countig number = 16
+minimun contig = 31
+maximum contig = 33205
+average contig = 6239.3125
+N50 = 19881
+
+real	0m1.829s
+user	0m0.146s
+sys	0m0.188s
+
+$ time ./contig-00.py ./SPAdes-02/K31/final_contigs-01.fasta 
+countig number = 1
+minimun contig = 100000
+maximum contig = 100000
+average contig = 100000.0
+N50 = 100000
+
+real	0m0.429s
+user	0m0.115s
+sys	0m0.114s
+
+$ time lastz ./Assem-01/contigs-01.fa[multiple] reference.fasta[unmask] --chain --format=mapping > ./LASTZ-01/lastz-v-01.tsv
+real	0m4.338s
+user	0m4.219s
+sys	0m0.053s
+
+$ time lastz ./SPAdes-02/K31/final_contigs-01.fasta[multiple] reference.fasta[unmask] --chain --format=mapping > ./LASTZ-01/lastz-s-01.tsv
+real	0m4.435s
+user	0m4.344s
+sys	0m0.059s
+
+$ time lastz ./Assem-01/contigs-01.fa[multiple] reference.fasta[unmask] --chain --format=rdotplot > ./LASTZ-01/rdotplot-v-01.tsv
+real	0m4.203s
+user	0m4.133s
+sys	0m0.050s
+
+$ time lastz ./SPAdes-02/K31/final_contigs-01.fasta[multiple] reference.fasta[unmask] --chain --format=rdotplot > ./LASTZ-01/rdotplot-s-01.tsv
+real	0m4.484s
+user	0m4.405s
+sys	0m0.059s
+
+For R_velvet
+png('~/QuanBioLab/week2/LASTZ-01/rdotplot-v-01.png')
+> dots = read.table("~/QuanBioLab/week2/LASTZ-01/rdotplot-v-01.tsv",header=T)
+> plot(dots,type="l")
+> title('Velvet assembly_high coverage')
+> dev.off()
+
+For R_SPAdes
+png('~/QuanBioLab/week2/LASTZ-01/rdotplot-s-01.png')
+> dots = read.table("~/QuanBioLab/week2/LASTZ-01/rdotplot-s-01.tsv",header=T)
+> plot(dots,type="l")
+> title('SPAdes assembly_high coverage')
+> dev.off()
+
+6. QUAST
+
+$ time quast.py ./Assem/contigs.fa ./SPAdes-01/K31/final_contigs.fasta ./Assem-01/contigs-01.fa ./SPAdes-02/K31/final_contigs-01.fasta
+real	0m8.908s
+user	0m4.131s
+sys	0m0.617s
