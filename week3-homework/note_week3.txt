@@ -1,0 +1,25 @@
+
+bwa index chr4-7-11.fa
+
+bwa mem ref.fa reads.fq > aln-se.sam
+
+bwa mem -R '@RG\tID:183-005-NB\tSM:bar' chr4-7-11.fa 183-005-NB.region.fq > aln-183
+bwa mem -R '@RG\tID:1449_002_LA\tSM:bar' chr4-7-11.fa 1449_002_LA.region.fq > aln-1449
+bwa mem -R '@RG\tID:1526_007_LA\tSM:bar' chr4-7-11.fa 1526_007_LA.region.fq > aln-1526
+
+samtools view -Sb aln-183 > aln-183.bam
+samtools view -Sb aln-1449 > aln-1449.bam
+samtools view -Sb aln-1526 > aln-1526.bam
+
+samtools sort aln-183.bam > aln-183_sort.bam
+
+[non-filtered]freebayes -f ../chr4-7-11-data/chr4-7-11.fa aln-183_sort.bam > aln-183_sort-nf.vcf
+[filered]freebayes -! 5 -F 0.2 -f chr4-7-11.fa aln-183_sort.bam > aln-183_sort_fb.vcf
+
+wget http://downloads.sourceforge.net/project/snpeff/snpEff_v3_6_core.zip
+unzip snpEff_v3_6_core.zip
+
+java -jar ./snpEff/snpEff.jar download GRCm37.67
+
+java -jar ./snpEff/snpEff.jar eff -v -canon GRCm37.67 ./aln-183_sort_fb.vcf > aln-183-snpEff.vcf 
+
