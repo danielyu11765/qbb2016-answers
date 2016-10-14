@@ -1,0 +1,43 @@
+plink2 --vcf BYxRM_GenoData.vcf
+plink2 --vcf BYxRM_GenoData.vcf --pca
+plink2 --vcf BYxRM_GenoData.vcf --freqx
+
+frqx (genotype count report)
+Produced by --freqx. Valid input for --read-freq.
+
+A text file with a header line, and then one line per variant with the following ten fields:
+
+CHR	Chromosome code
+SNP	Variant identifier
+A1	Allele 1 (usually minor)
+A2	Allele 2 (usually major)
+C(HOM A1)	A1 homozygote count
+C(HET)	Heterozygote count
+C(HOM A2)	A2 homozygote count
+C(HAP A1)	Haploid A1 count (includes male X chromosome)
+C(HAP A2)	Haploid A2 count
+C(MISSING)	Missing genotype count
+
+
+./pca-plot-01.py plink.eigenvec
+./mod-pheno-00.py BYxRM_PhenoData.txt > PhenoData.pheno
+
+plink2 -assoc --allow-no-sex --all-pheno --pheno PhenoData.pheno --vcf BYxRM_GenoData.vcf
+
+
+CHR      Chromosome number
+     SNP      SNP identifier
+     BP       Physical position (base-pair)
+     NMISS    Number of non-missing genotypes
+     BETA     Regression coefficient
+     SE       Standard error
+     R2       Regression r-squared
+     T        Wald test (based on t-distribtion)
+     P        Wald test asymptotic p-value
+
+../manhattan-01.py *.qassoc
+
+Note: the final manhattan plots are generated from manhattan-01.py
+
+
+
