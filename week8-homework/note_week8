@@ -1,0 +1,10 @@
+[install pillow, h5py and HiFive]
+
+hifive 5c-complete express -P Nora_E14 -C Nora_ESC_male_E14.counts Nora_Primers.bed
+
+hifive 5c-heatmap Nora_E14.fcp Out.heat -i CTCF_frag.png -d fragment
+
+hifive 5c-heatmap Nora_E14.fcp Out2.heat -i CTCF_enr.png -d enrichment
+
+CTCF_frag: fragment
+CTCF_enr: enrichment
